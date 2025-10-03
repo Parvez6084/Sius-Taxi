@@ -16,6 +16,12 @@
 	<string>sisutaxi</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs your location while using the app.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs your location even when the app is in the background.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs your location always and when in use.</string>
     <key>UIBackgroundModes</key>
     <array>
       <string>location</string>
