@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sisutaxi/views/pages/welcome_page/welcomePageController.dart';
 
@@ -8,47 +7,22 @@ import '';
 class WelcomePage extends GetView<WelcomePageController> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
     return Scaffold(
-      backgroundColor: Colors.black54,
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 40,
-              left: 40,
+            Positioned( top: 40, left: 40,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text(
-                    'Welcome to',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  Text(
-                    'Sisu Taxi',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 40,
-                        color: Colors.orangeAccent,
-                        fontWeight: FontWeight.w400),
-                  ),
+                  Text('Welcome to', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, color: Colors.black, fontWeight: FontWeight.w400),),
+                  Text('Sisu Taxi', textAlign: TextAlign.center, style: TextStyle(fontSize: 40, color: Colors.deepOrange, fontWeight: FontWeight.w400),),
                 ],
               ),
             ),
-            const Positioned(
-                bottom: 40,
-                left: 40,
-                right: 40,
-                child: Text('Let ready to new experience >>', style: TextStyle(color: Colors.orangeAccent))),
+            Positioned(bottom: 40, left: 40, right: 40,
+                child: Text(controller.text.value, style: TextStyle(color: Colors.deepOrange))),
           ],
         ),
       ),

@@ -7,12 +7,16 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:sisutaxi/model/placeModel.dart' as model;
+import 'package:sisutaxi/model/searchModel.dart';
 import '../../../consts/app_const.dart';
 import '../../../consts/app_images.dart';
+import '../../../services/location_repository.dart';
 
 class HomePageController extends GetxController {
   var pickup = ''.obs;
   var destination = 'Choose destination'.obs;
+  var searchLocation = ''.obs;
   var price = ''.obs;
   var distance = ''.obs;
   var duration = ''.obs;
@@ -25,6 +29,10 @@ class HomePageController extends GetxController {
   var marker = <Marker>[].obs;
   var polyline = <Polyline>[].obs;
 
+  final TextEditingController searchController = TextEditingController();
+  final RxList<Prediction> _searchResultList = RxList.empty();
+  List<Prediction> get searchResultList => _searchResultList.toList();
+
   final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
   final CameraPosition kGooglePlex = const CameraPosition(target: LatLng(61.9241, 25.7482), zoom: 10);
 
@@ -34,12 +42,17 @@ class HomePageController extends GetxController {
     await loadCurrentLocation();
   }
 
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
+  }
+
   Future<void> loadCurrentLocation() async {
     final locationData = await getCurrentLocation();
     if (locationData != null) {
       currentLat.value = locationData.latitude ?? 0.0;
       currentLon.value = locationData.longitude ?? 0.0;
-
       await animateCameraTo(LatLng(currentLat.value, currentLon.value), 17);
       await setPinMarker();
       pickup.value = await getStreetName(currentLat.value, currentLon.value);
@@ -49,20 +62,22 @@ class HomePageController extends GetxController {
   Future<void> addDestinationMarker(LatLng position) async {
     await addMarker(position, AppImages.des, '2', 'Destination');
     destinationLatLon.value = position;
-    destination.value = await getStreetName(position.latitude, position.longitude);
-    await setPolylineDirections();
+    await setPolylineDirections(destinationLatLon.value.latitude, destinationLatLon.value.longitude);
   }
 
-  Future<void> setPolylineDirections() async {
+  Future<void> setPolylineDirections(double desLat, double desLng) async {
     PolylinePoints polylinePoints = PolylinePoints(apiKey: AppConst.googleMapApiKey);
     final response = await polylinePoints.getRouteBetweenCoordinatesV2(
       request: RoutesApiRequest(
         origin: PointLatLng(currentLat.value, currentLon.value),
-        destination: PointLatLng(destinationLatLon.value.latitude, destinationLatLon.value.longitude),
+        destination: PointLatLng(desLat, desLng),
         travelMode: TravelMode.driving,
         routingPreference: RoutingPreference.trafficAware,
       ),
     );
+
+    destination.value = await getStreetName(desLat, desLng);
+    await addMarker(LatLng(desLat, desLng), AppImages.des, '2', 'Destination');
 
     if (response.routes.isNotEmpty) {
       final route = response.routes.first;
@@ -108,9 +123,12 @@ class HomePageController extends GetxController {
 
   Future<LocationData?> getCurrentLocation() async {
     Location location = Location();
-    if (!await location.serviceEnabled() && !await location.requestService()) return null;
-    if (await location.hasPermission() == PermissionStatus.denied &&
-        await location.requestPermission() != PermissionStatus.granted) return null;
+    if (!await location.serviceEnabled()) {
+      if (!await location.requestService()) return null;
+    }
+    if (await location.hasPermission() == PermissionStatus.denied) {
+      if (await location.requestPermission() != PermissionStatus.granted) return null;
+    }
     return await location.getLocation();
   }
 
@@ -119,5 +137,21 @@ class HomePageController extends GetxController {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
     return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+  }
+
+  void onChangeDestination(String text) {
+    LocationRepository().getAutoCompletedLocation(text, currentLat.value, currentLon.value).then((SearchModel value) {
+      if (value.predictions != null && value.predictions!.isNotEmpty) {
+        _searchResultList.value = value.predictions!;
+      }
+    });
+  }
+
+  void onTapSearchLocation(String placeId) async {
+    LocationRepository().getAutoCompletedPlaceID(placeId).then((model.PlaceModel value) {
+      var lat = value.result?.geometry?.location?.lat ?? 0.0;
+      var lon = value.result?.geometry?.location?.lng ?? 0.0;
+      setPolylineDirections(lat, lon);
+    });
   }
 }

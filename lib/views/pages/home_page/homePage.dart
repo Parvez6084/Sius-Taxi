@@ -1,30 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sisutaxi/views/pages/home_page/searchLocationPage.dart';
+
 import '../../../consts/app_images.dart';
 import 'homePageController.dart';
 
 class HomePage extends GetView<HomePageController> {
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         body: Obx((){
-          return GoogleMap(
-            zoomControlsEnabled: false,
-            myLocationButtonEnabled: false,
-            myLocationEnabled: true,
-            markers: Set<Marker>.of(controller.marker),
-            polylines: Set<Polyline>.of(controller.polyline),
-            mapType: MapType.normal,
-            onLongPress: controller.addDestinationMarker,
-            initialCameraPosition: controller.kGooglePlex,
-            onMapCreated: (GoogleMapController map) {
-              DefaultAssetBundle.of(context).loadString(AppImages.themes)
-                  .then((value)=> map.setMapStyle(value));
-              controller.mapController.complete(map);
-            },
+          return Container(
+            margin: const EdgeInsets.only(bottom: 250),
+            child: GoogleMap(
+              zoomControlsEnabled: false,
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              markers: Set<Marker>.of(controller.marker),
+              polylines: Set<Polyline>.of(controller.polyline),
+              mapType: MapType.normal,
+              onLongPress: controller.addDestinationMarker,
+              initialCameraPosition: controller.kGooglePlex,
+              onMapCreated: (GoogleMapController map) {
+                DefaultAssetBundle.of(context).loadString(AppImages.themes)
+                    .then((value)=> map.setMapStyle(value));
+                controller.mapController.complete(map);
+              },
+            ),
           );
         }),
         bottomSheet: Obx((){
@@ -79,15 +83,26 @@ class HomePage extends GetView<HomePageController> {
                       Text(controller.pickup.value, style: TextStyle(fontSize: 18, fontWeight:FontWeight.w300),),
                       SizedBox(height: 8,),
                       Divider(color: Colors.black54,thickness: 0.2,),
-                      Row(
-                        children: [
-                          Image(image: AssetImage(AppImages.des), height: 16, width: 16),
-                          SizedBox(width: 4,),
-                          Text('Destination', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepOrange),),
-                        ],
+                      GestureDetector(
+                        onTap: (){
+                          Get.dialog(Searchlocationpage());
+                          controller.searchController.clear();
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Image(image: AssetImage(AppImages.des), height: 16, width: 16),
+                                SizedBox(width: 4,),
+                                Text('Destination', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepOrange),),
+                              ],
+                            ),
+                            SizedBox(height: 4,),
+                            Text(controller.destination.value, style: TextStyle(fontSize: 18, fontWeight:FontWeight.w300 ),),
+                          ],
+                        )
                       ),
-                      SizedBox(height: 4,),
-                      Text(controller.destination.value, style: TextStyle(fontSize: 18, fontWeight:FontWeight.w300 ),),
                       SizedBox(height: 30),
                       Container(
                         height: 60,

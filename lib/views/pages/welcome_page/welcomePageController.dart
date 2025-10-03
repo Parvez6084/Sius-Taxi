@@ -4,6 +4,7 @@ import '../../../routes/app_routes.dart';
 
 class WelcomePageController extends GetxController {
 
+  var text = 'Let ready to new experience >>'.obs;
 
 @override
   void onReady() {
