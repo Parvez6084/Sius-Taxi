@@ -22,7 +22,7 @@ A Flutter-based taxi booking and navigation application with **Google Maps integ
   <img src="assets/screenshots/4.png" width="180">
 </p>
 ---
-
+![Welcome Page](assets/screenshots/1.png)
 ## 🛠️ Setup Instructions
 
 ### 1. Clone the Repository
