@@ -11,6 +11,11 @@ A Flutter-based taxi booking and navigation application with **Google Maps integ
 - Draw routes with **Polyline Points**
 - Structured state management with **GetX**
 
+
+
+# Output
+
+
 ---
 
 ## 🛠️ Setup Instructions
