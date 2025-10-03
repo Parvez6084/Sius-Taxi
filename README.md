@@ -15,7 +15,12 @@ A Flutter-based taxi booking and navigation application with **Google Maps integ
 
 # Output
 
-
+<p float="left">
+  <img src="assets/screenshots/1.png" width="180">
+  <img src="assets/screenshots/2.png" width="180">
+  <img src="assets/screenshots/3.png" width="180">
+  <img src="assets/screenshots/4.png" width="180">
+</p>
 ---
 
 ## 🛠️ Setup Instructions
